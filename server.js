@@ -1,7 +1,8 @@
 const express = require('express')
 const app = express()
+const database = require("./database")
 app.set("view engine", "ejs")
-
+app.use(express.urlencoded({extended: true}));
 app.get("/" , (req ,res) =>{
     res.render("index.ejs" , {
       numberOfItterations: 50
@@ -10,33 +11,44 @@ app.get("/" , (req ,res) =>{
 })
 
 
-const notes= [
-  {
-    id: 1,
-    title: "my First Note",
-    timestamp: Date.now(),
-    contents: 
-    "asta am eu de facut frate"
-  },
-  {
-  id: 2,
-  title: "my Second Note",
-  timestamp: Date.now(),
-  contents: 
-  "asta am eu de facut dupa ce fac prima"
-}
-]
 
 app.get("/notes" , (req,res) => {
+  const notes = database.getNotes()
   res.render("notes.ejs", {
     notes,
   });
 })
 
 
+app.get("/notes/:id", (req, res) => {
+ const id =  +req.params.id;
+ const note = database.getNote(id);
+
+ if(!note) {
+   res.status(404).render("note404.ejs")
+   return
+ }
+ res.render("singleNote.ejs" , {
+   note
+ });
+})
+
+app.get("/createNote", (req,res) => {
+  res.render("createNote.ejs")
+})
+
+
+app.post("/notes", (req,res) => {
+  const data =  req.body;
+  database.addNote(data)
+  
+  res.redirect("/notes");
+
+})
+
 app.use(express.static("public"))
 
-const port = 8083
+const port = 8084
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

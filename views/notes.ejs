@@ -2,14 +2,15 @@
 <html>
 <body>
 
-<h1>Notes</h1>
+
 <ul>
 <% notes.forEach(note => { %>
 <li>
 <h2>
     <%= note.title %>
-    <%= note.contents %>
-    <%= note.timestamp %>
+    <%= note.contents.substring(0,200) %>
+    <%= new Date(note.timestamp) %>
+    <a href="/notes/<%= note.id %>">View More</a>
 </h2>
 
     <p>
